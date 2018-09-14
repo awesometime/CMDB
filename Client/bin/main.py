@@ -30,3 +30,7 @@ from core import handler
 if __name__ == '__main__':
 
     handler.ArgvHandler(sys.argv)
+    # print(sys.argv)
+    # for i in range(len(sys.argv)):
+    #     print(sys.argv[i])
+    # 要去函数外部看结果 cmd下运行
