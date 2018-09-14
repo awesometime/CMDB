@@ -8,10 +8,17 @@ import urllib.request
 from core import info_collection
 from conf import settings
 
-print(settings.PATH)
-class ArgvHandler(object):
+# print(settings.PATH)
+# sys.argv = ['G:/PyCharm/PythonProjects/cmdb/Client/bin/main.py'] 或者['main.py']
+class ArgvHandler(object):  # 继承
 
     def __init__(self, args):
+        """
+            在\cmdb\Client\bin目录下执行main.py , args=['main.py'] 执行help_msg()
+            在\cmdb\Client\bin目录下执行main.py report_data , args=['main.py','report_data']执行report_data()
+            在\cmdb\Client\bin目录下执行main.py report_data collect_data , 
+                           args=['main.py','report_data','collect_data'] 执行 report_data() 和 collect_data()
+        """
         self.args = args
         self.parse_args()
 
@@ -68,6 +75,7 @@ class ArgvHandler(object):
             # pycharm中粉红色加粗显示   '发送完毕！'
             message = response.read().decode()
             # message 来自assets/asset_handler/add_to_new_assets_zone
+            # 
             print("返回结果：%s" % message)
         except Exception as e:
             message = "发送失败"
