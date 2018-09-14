@@ -77,7 +77,7 @@ class ArgvHandler(object):  # 继承
             # pycharm中粉红色加粗显示   '发送完毕！'
             message = response.read().decode()
             # message 来自assets/asset_handler/add_to_new_assets_zone
-            # 
+            # TODO
             print("返回结果：%s" % message)
         except Exception as e:
             message = "发送失败"
