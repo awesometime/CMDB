@@ -27,7 +27,9 @@ class ArgvHandler(object):  # 继承
         分析参数，如果有参数指定的功能，则执行该功能，如果没有，打印帮助说明。
         :return:
         """
+        # 判断self对象  即ArgvHandler()对象有没有self.args[1]所指的方法，有返回true
         if len(self.args) > 1 and hasattr(self, self.args[1]):
+            # 获取seif对象的self.args[1]方法，存在就打印出方法的内存地址；  func（）则执行self.args[1]方法
             func = getattr(self, self.args[1])
             func()
         else:
