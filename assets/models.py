@@ -2,6 +2,37 @@ from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
 
+"""
+   1 模型
+   
+   查看生成sql语句 用>python manage.py sqlmigrate
+"""
+
+"""
+   2 字段
+
+    ForeignKey
+    ManyToManyField
+    OneToOneField
+"""
+
+"""
+   3 字段参数
+
+    choices=
+    default
+    max_length
+    verbose_name 为字段设置一个人类可读，更加直观的别名
+    unique 独一无二
+    null=True 数据库填NULL
+    blank
+    on_delete=models.CASCADE  模拟SQL语言中的ON DELETE CASCADE约束，将定义有外键的模型对象同时删除
+    related_name='用于关联对象反向引用模型的名称'
+    auto_now_add=True
+    auto_now=True
+"""
+
+
 # 1
 class Asset(models.Model):
     """    所有资产的共有数据表    """
@@ -12,7 +43,9 @@ class Asset(models.Model):
         ('securitydevice', '安全设备'),
         ('software', '软件资产'),
     )
-
+    # 用于页面上的选择框标签，需要先提供一个二维的二元元组，
+    # 第一个元素表示存在数据库内真实的值，
+    # 第二个表示页面上显示的具体内容。在浏览器页面上将显示第二个元素的值
     asset_status = (
         (0, '在线'),
         (1, '下线'),
@@ -29,6 +62,7 @@ class Asset(models.Model):
 
     manufacturer = models.ForeignKey('Manufacturer', null=True, blank=True, verbose_name='制造商',on_delete=models.CASCADE)
     manage_ip = models.GenericIPAddressField(null=True, blank=True, verbose_name='管理IP')
+    # ManyToManyField
     tags = models.ManyToManyField('Tag', blank=True, verbose_name='标签')
     admin = models.ForeignKey(User, null=True, blank=True, verbose_name='资产管理员',on_delete=models.CASCADE, related_name='admin')
     idc = models.ForeignKey('IDC', null=True, blank=True, verbose_name='所在机房',on_delete=models.CASCADE)
@@ -39,6 +73,7 @@ class Asset(models.Model):
     price = models.FloatField(null=True, blank=True, verbose_name="价格")
 
     approved_by = models.ForeignKey(User, null=True, blank=True, verbose_name='批准人', related_name='approved_by',on_delete=models.CASCADE)
+    # 可能是关联了django自带的 User 模型，所以不用加''
 
     memo = models.TextField(null=True, blank=True, verbose_name='备注')
     c_time = models.DateTimeField(auto_now_add=True, verbose_name='批准日期')
@@ -46,12 +81,13 @@ class Asset(models.Model):
 
     def __str__(self):
         return '<%s>  %s' % (self.get_asset_type_display(), self.name)
-
+        # 要获取一个choices的第二元素的值，可以使用get_字段名_display()方法，
     class Meta:
         verbose_name = '资产总表'
         verbose_name_plural = "资产总表"
-        ordering = ['-c_time']
-
+        # db_table = 'asset'
+        ordering = ['-c_time']   # 降序
+    # 类 asset 在浏览器中的别名
 
 # 2
 class Server(models.Model):

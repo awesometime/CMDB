@@ -22,7 +22,7 @@ from conf import settings
 # 这一点一定要注意。
 def update_test(data):
     """
-    创建测试用例
+    创建测试用例，   假装我是一个真机器
     :return:
     """
     # 将数据打包到一个字典内，并转换为json格式

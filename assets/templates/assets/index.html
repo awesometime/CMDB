@@ -57,7 +57,7 @@
             </tr>
             </thead>
             <tbody>
-
+                {# 不用assets = models.Asset.objects.all()先获取数据吗？？？ #}
                 {% for asset in assets %}
                 <tr>
                   <td>{{ forloop.counter }}</td>

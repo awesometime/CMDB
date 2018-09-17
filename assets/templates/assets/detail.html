@@ -19,6 +19,7 @@
         资产详细
         <small>asset info</small>
       </h1>
+        <!-- 右上角显示 主页>资产总表>资产详细> -->
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> 主页</a></li>
         <li>资产总表</li>
@@ -42,6 +43,7 @@
           </div>
         </div>
         <div class="box-body">
+          <!-- 概览table -->
           <h4><b>概览:</b></h4>
             <table border="1" class="table  table-responsive" style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue" >
                 <thead>
@@ -57,6 +59,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                <!-- 构造<table>，然后插入数据。如果没有数据，就以‘N/A’代替-->
                 <tr>
                     <td>{{ asset.get_asset_type_display }}</td>
                     <td>{{ asset.sn }}</td>
@@ -75,7 +78,7 @@
                 </tr>
                 </tbody>
             </table>
-            <br />
+            <br />  <!-- 换行，只出现一次，无结束标签-->
             <table border="1" class="table  table-responsive" style="border-left:3px solid deepskyblue;border-bottom:1px solid deepskyblue">
                 <thead>
                     <tr>
@@ -102,6 +105,7 @@
                 </tr>
                 </tbody>
             </table>
+          <!--服务器  表table-->
           <h4><b>服务器:</b></h4>
             <table border="1" class="table  table-responsive" style="border-left:3px solid green;border-bottom:1px solid green">
                 <thead>
@@ -129,6 +133,7 @@
                 </tr>
                 </tbody>
             </table>
+        <!--cpu  表table-->
         <h4><b>CPU:</b></h4>
             <table border="1" class="table  table-responsive" style="border-left:3px solid purple;border-bottom:1px solid purple">
                 <thead>
@@ -146,6 +151,7 @@
                 </tr>
                 </tbody>
             </table>
+        <!--内存  表table-->
         <h4><b>内存:</b></h4>
         <table border="1" class="table  table-responsive" style="border-left:3px solid orangered;border-bottom:1px solid orangered">
                 <thead>
@@ -239,7 +245,7 @@
             </table>
 
         </div>
-        <!-- /.box-body -->
+        <!-- /.box-body 底部添加一个返回资产总表的链接-->
         <div class="box-footer">
           <i class="fa fa-angle-double-left"></i>&nbsp;&nbsp;<a href="{% url 'assets:index' %}"><strong>返回资产列表页</strong></a>
         </div>

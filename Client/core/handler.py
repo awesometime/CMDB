@@ -7,13 +7,21 @@ import urllib.parse
 import urllib.request
 from core import info_collection
 from conf import settings
-
-print(settings.PATH)
+import sys
+# print(settings.PATH)
+print(sys.argv) # = ['G:/PyCharm/PythonProjects/cmdb/Client/bin/main.py']
 class ArgvHandler(object):
 
     def __init__(self, args):
+        """
+            在\cmdb\Client\bin目录下执行main.py,args=['main.py'] 执行help_msg()
+            在\cmdb\Client\bin目录下执行main.py report_data,args=['main.py','report_data']执行report_data()
+            在\cmdb\Client\bin目录下执行main.py report_data collect_data ,args=['main.py','report_data','collect_data']执行report_data()和collect_data
+        """
+
         self.args = args
         self.parse_args()
+
 
     def parse_args(self):
         """
@@ -26,7 +34,7 @@ class ArgvHandler(object):
         else:
             self.help_msg()
 
-    @staticmethod
+    @staticmethod  # 静态方法无需实例化
     def help_msg():
         """
         帮助说明
@@ -60,14 +68,17 @@ class ArgvHandler(object):
         url = "http://%s:%s%s" % (settings.Params['server'], settings.Params['port'], settings.Params['url'])
         print('正在将数据发送至： [%s]  ......' % url)
         try:
-            # 使用Python内置的urllib.request库，发送post请求。
-            # 需要先将数据进行封装，并转换成bytes类型
+            # 需要先将数据进行封装urlencode(data)，并encode()转换成bytes类型
             data_encode = urllib.parse.urlencode(data).encode()
+            # 使用Python内置的urllib.request库，发送post请求。得到响应对象
             response = urllib.request.urlopen(url=url, data=data_encode, timeout=settings.Params['request_timeout'])
             print("\033[31;1m发送完毕！\033[0m ")
             # pycharm中粉红色加粗显示   '发送完毕！'
             message = response.read().decode()
-            # message 来自assets/asset_handler/add_to_new_assets_zone
+            # 响应 message   来自assts/view.report()
+            # 来自其中前有一张情形assts/view.report()又调用
+            # assets/asset_handler/NewAsset的add_to_new_assets_zone()
+
             print("返回结果：%s" % message)
         except Exception as e:
             message = "发送失败"

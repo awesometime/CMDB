@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
+# 为让 view.py 不显得臃肿，对 view.py 的补充
+
 import json
 from . import models
 
-
+# 1 新增资产或更新资产
 class NewAsset(object):
     def __init__(self, request, data):
         self.request = request
@@ -24,11 +26,18 @@ class NewAsset(object):
             'os_type': self.data.get('os_type'),
 
         }
+        # models.NewAssetApprovalZone()方法，model.py 最后一个方法
+        # models.NewAssetApprovalZone.objects.all() 可以获取某张表的所有记录
+        # models.NewAssetApprovalZone.objects.all()[5:9] 可以获取某张表的所有记录
+        # models.NewAssetApprovalZone.objects.all().filter(pub_date__year=2006)  all()可不写 过滤出符合条件的对象
+        # models.NewAssetApprovalZone.objects.get(pub_date__year=2006)  获取某一个对象
+
         models.NewAssetApprovalZone.objects.update_or_create(sn=self.data['sn'], defaults=defaults)
 
         return '资产已经加入或更新待审批区！'
 
 
+# 2
 def log(log_type, msg=None, asset=None, new_asset=None, request=None):
     """
     记录日志
@@ -55,6 +64,8 @@ def log(log_type, msg=None, asset=None, new_asset=None, request=None):
     # 更多日志类型.....
     event.save()
 
+
+# 3 审批资产并上线
 class ApproveAsset:
     """
     审批资产并上线。
@@ -62,18 +73,29 @@ class ApproveAsset:
     # 初始化方法接收reqeust和待审批资产的id
     def __init__(self, request, asset_id):
         self.request = request
+        # models.NewAssetApprovalZone.objects 提前从待审批区获取id=asset_id的资产对象
+        # 资产
         self.new_asset = models.NewAssetApprovalZone.objects.get(id=asset_id)
+        # 提前获取资产对象的所有数据data
         self.data = json.loads(self.new_asset.data)
 
-    def asset_upline(self):  # 入口方法，运用反射
-        # 为以后的其它类型资产扩展留下接口
+    def asset_upline(self):  # 入口方法
+        # 运用反射 ，为以后的其它类型 资产上线方法 扩展留下接口
+        # self对象(asset_handler.AproveAsset()对象)有_%s_upline方法就返回对象的内存func，然后func()执行_%s_upline方法
         func = getattr(self, "_%s_upline" % self.new_asset.asset_type)
         ret = func()
-        return ret and True
+        return ret and True    # 有假则假，全真则真
 
+    # 以单个下划线开头的 _变量或_方法仅供内部使用。其他模块不能导入.
+    #  该约定在PEP 8中有定义
     def _server_upline(self):
         # 在实际的生产环境中，下面的操作应该是原子性的整体事务，任何一步出现异常，所有操作都要回滚。
-        asset = self._create_asset()  # 创建一条资产并返回资产对象。注意要和待审批区的资产区分开。
+        # 创建一条 资产 并返回资产对象。
+        # 注意要和 新资产待审批区 区分开。 属于model中两个不同的类
+
+        # TODO
+        # 由init中的data创建新待审批区资产，原来如果有待审批资产的审批逻辑呢？？
+        asset = self._create_asset()
         try:
             self._create_manufacturer(asset) # 创建厂商
             self._create_server(asset)       # 创建服务器
@@ -83,6 +105,8 @@ class ApproveAsset:
             self._create_nic(asset)          # 创建网卡
             self._delete_original_asset()    # 从待审批资产区删除已审批上线的资产
         except Exception as e:
+            # self._create_asset()创建的对象的delete方法
+            # 详见刘江的django博客/第一章：模型层model layer/查询操作的最后边
             asset.delete()
             log('approve_failed', msg=e, new_asset=self.new_asset, request=self.request)
             print(e)
@@ -98,6 +122,8 @@ class ApproveAsset:
         创建资产并上线
         :return:
         """
+        # models.Asset.objects.create()           创建Asset对象
+        # models.Asset.objects.create().save()    保存Asset对象
         # 利用request.user自动获取当前管理人员的信息，作为审批人添加到资产数据中。
         asset = models.Asset.objects.create(asset_type=self.new_asset.asset_type,
                                             name="%s: %s" % (self.new_asset.asset_type, self.new_asset.sn),
@@ -115,6 +141,7 @@ class ApproveAsset:
         # 判断厂商数据是否存在。如果存在，看看数据库里是否已经有该厂商，再决定是获取还是创建。
         m = self.new_asset.manufacturer
         if m:
+            # models.Manufacturer.objects.get_or_create(name=m)
             manufacturer_obj, _ = models.Manufacturer.objects.get_or_create(name=m)
             asset.manufacturer = manufacturer_obj
             asset.save()
@@ -228,21 +255,23 @@ class ApproveAsset:
         不过这样可能导致待审批区越来越大。
         :return:
         """
-        self.new_asset.delete()
+        self.new_asset.delete()   # 资产的delete方法
 
-
+# 4
 class UpdateAsset:
     """
     自动更新已上线的资产。
     如果想让记录的日志更详细，可以逐条对比数据项，将更新过的项目记录到log信息中。
     """
-
+    # views.report()方法中的
+    # update_asset = asset_handler.UpdateAsset(request, asset_obj[0], data)
+    # 将参数传入    谁调用谁传参数
     def __init__(self, request, asset, report_data):
         self.request = request
         self.asset = asset
-        self.report_data = report_data  # 此处的数据是由客户端发送过来的整个数据字符串
-        # report_data 怎么传过来的
-        self.asset_update()   # 首先初始化动作，自动执行asset_update()方法
+        self.report_data = report_data   # (错误)此处的数据是由客户端发送过来的整个数据字符串
+        # 首先初始化动作，自动执行asset_update()方法
+        self.asset_update()
 
     def asset_update(self):
         # 为以后的其它类型资产扩展留下接口

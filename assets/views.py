@@ -7,8 +7,13 @@ from . import asset_handler
 
 # Create your views here.
 def index(request):
-
+    # 从数据库获取数据,需要和model联系起来
+    # 也需要和template联系起来
     assets = models.Asset.objects.all()
+    # render()函数的第一个位置参数是请求对象（就是view函数的第一个参数），
+    # 第二个位置参数是待渲染的模板。
+    # 还可以有一个可选的第三参数，经常是locals()，一个字典，包含需要传递给模板的数据。
+    # 最后render函数返回一个经过字典数据渲染过的模板封装而成的HttpResponse对象。
     return render(request, 'assets/index.html', locals())
 
 
@@ -40,6 +45,7 @@ def detail(request, asset_id):
     :param asset_id:
     :return:
     """
+    # 获取数据     如果对象不存在则弹出Http404错误
     asset = get_object_or_404(models.Asset, id=asset_id)
     return render(request, 'assets/detail.html', locals())
 
@@ -69,10 +75,12 @@ def report(request):
                 # 进入已上线资产的数据更新流程
                 update_asset = asset_handler.UpdateAsset(request, asset_obj[0], data)
                 return HttpResponse("资产数据已经更新！")
-            else:  # 如果已上线资产中没有，那么说明是未批准资产，进入新资产待审批区，更新或者创建资产。
+            else:
+                # 如果已上线资产中没有，那么说明是未批准资产，进入新资产待审批区，更新或者创建资产。
                 obj = asset_handler.NewAsset(request, data)
                 response = obj.add_to_new_assets_zone()
                 return HttpResponse(response)
         else:
             return HttpResponse("没有资产sn序列号，请检查数据！")
+
 

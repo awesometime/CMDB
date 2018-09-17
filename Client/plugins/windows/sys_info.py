@@ -26,10 +26,10 @@ def collect():
     data.update(win32obj.get_motherboard_info())
     data.update(win32obj.get_disk_info())
     data.update(win32obj.get_nic_info())
-    # 最后返回一个数据字典
+    # update()将括号中的字典的键值对*添加*到data,最后返回一个数据字典
     return data
 
-
+# win32obj = Win32Info()实例化对象传给self
 class Win32Info(object):
 
     def __init__(self):
@@ -38,6 +38,7 @@ class Win32Info(object):
         self.wmi_service_obj = win32com.client.Dispatch("WbemScripting.SWbemLocator")
         self.wmi_service_connector = self.wmi_service_obj.ConnectServer(".", "root\cimv2")
 
+    # 调用方法时data.update(win32obj.get_cpu_info())实例化对象*自动*传给self
     def get_cpu_info(self):
         """
         获取CPU的相关数据，这里只采集了三个数据，实际有更多，请自行选择需要的数据
@@ -74,7 +75,7 @@ class Win32Info(object):
                 "sn": item. SerialNumber,
             }
             data.append(item_data)  # 将每条内存的信息，添加到一个列表里
-
+        # data 是列表
         return {"ram": data}    # 再对data列表封装一层，返回一个字典，方便上级方法的调用
 
     def get_motherboard_info(self):
@@ -84,6 +85,11 @@ class Win32Info(object):
         """
         computer_info = self.wmi_obj.Win32_ComputerSystem()[0]
         system_info = self.wmi_obj.Win32_OperatingSystem()[0]
+
+        # data = {}                两种方法创建字典
+        # data = {"name": 'cold'}   # 初始化
+
+        # data = dict(name='cold')  # 初始化  更优雅
         data = dict()
         data['manufacturer'] = computer_info.Manufacturer
         data['model'] = computer_info.Model

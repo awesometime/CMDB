@@ -14,14 +14,18 @@ def windows_sys_info():
     from plugins.windows import sys_info as win_sys_info
     return win_sys_info.collect()
 
-
+# core.handler.ArgvHandler().collect_data() 中用到了InfoCollection().collect()
+# info = info_collection.InfoCollection()   类实例化对象
+# asset_data = info.collect()               调用方法,把实例化对象自己自动传入
 class InfoCollection(object):
 
     def collect(self):
         # 收集平台信息
         # 首先判断当前平台，根据平台的不同，执行不同的方法
         try:
+            # 获取InfoCollection()对象的platform.system()方法，存在就打印出方法的内存地址
             func = getattr(self, platform.system())
+            #  func（）则执行platform.system()方法
             info_data = func()
             formatted_data = self.build_report_data(info_data)
             return formatted_data
@@ -29,7 +33,6 @@ class InfoCollection(object):
             sys.exit("不支持当前操作系统： [%s]! " % platform.system())
 
     # def Linux(self):
-    #
     #     return linux_sys_info()
 
     def Windows(self):
