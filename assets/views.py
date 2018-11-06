@@ -7,9 +7,16 @@ from . import asset_handler
 
 # Create your views here.
 def index(request):
-    # 从数据库获取数据,需要和model联系起来
+    # 从数据库 获取 数据,需要和model联系起来
     # 也需要和template联系起来
     assets = models.Asset.objects.all()
+#     给数据库写入     设置对象的值
+#     asset01 = models.Asset()
+#     asset01.name = ""
+#     asset01.tags = ""
+#     asset01.price = 23
+#     asset01.save() 
+        
     # render()函数的第一个位置参数是请求对象（就是view函数的第一个参数），
     # 第二个位置参数是待渲染的模板。
     # 还可以有一个可选的第三参数，经常是locals()，一个字典，包含需要传递给模板的数据。
