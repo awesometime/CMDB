@@ -64,8 +64,8 @@ def report(request):
     :param request:
     :return:
     """
-    if request.method == "POST":
-        asset_data = request.POST.get('asset_data')
+    if request.method == "POST":                           # 从用户post中取数据
+        asset_data = request.POST.get('asset_data', '')    # 取不到，默认为空
         data = json.loads(asset_data)
         # 各种数据检查，请自行添加和完善！
         if not data:
