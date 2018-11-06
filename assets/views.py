@@ -10,12 +10,20 @@ def index(request):
     # 从数据库 获取 数据,需要和model联系起来
     # 也需要和template联系起来
     assets = models.Asset.objects.all()
+    
+    
+    
 #     给数据库写入     设置对象的值
-#     asset01 = models.Asset()
-#     asset01.name = ""
-#     asset01.tags = ""
-#     asset01.price = 23
-#     asset01.save() 
+#     if request.method == "POST":                           # 从用户post中取数据
+#             name = request.POST.get('name', '')            # 取不到，默认为空
+#             tags = request.POST.get('tags', '')           
+#             price = request.POST.get('price', '')            
+            
+#             asset01 = models.Asset()        # 取到数据后存入数据库
+#             asset01.name = name
+#             asset01.tags = tags
+#             asset01.price = price
+#             asset01.save() 
         
     # render()函数的第一个位置参数是请求对象（就是view函数的第一个参数），
     # 第二个位置参数是待渲染的模板。
